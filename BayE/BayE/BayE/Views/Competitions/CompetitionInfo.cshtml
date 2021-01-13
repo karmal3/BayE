@@ -1,0 +1,391 @@
+﻿@model BayE.Entities.Competition
+@{
+    ViewData["Title"] = "CompetitionInfo";
+}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/login.css">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/searchDisabler.css">
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        .white-bg {
+            background-color: #ffffff;
+        }
+
+        .page-heading {
+            border-top: 0;
+            padding: 0 10px 20px 10px;
+        }
+
+        .forum-post-container .media {
+            margin: 10px 10px 10px 10px;
+            padding: 20px 10px 20px 10px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .forum-avatar {
+            float: left;
+            margin-right: 20px;
+            text-align: center;
+            width: 110px;
+        }
+
+            .forum-avatar .img-circle {
+                height: 48px;
+                width: 48px;
+            }
+
+        .author-info {
+            color: #676a6c;
+            font-size: 11px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .forum-post-info {
+            padding: 9px 12px 6px 12px;
+            background: #f9f9f9;
+            border: 1px solid #f1f1f1;
+        }
+
+        .media-body > .media {
+            background: #f9f9f9;
+            border-radius: 3px;
+            border: 1px solid #f1f1f1;
+        }
+
+        .forum-post-container .media-body .photos {
+            margin: 10px 0;
+        }
+
+        .forum-photo {
+            max-width: 140px;
+            border-radius: 3px;
+        }
+
+        .media-body > .media .forum-avatar {
+            width: 70px;
+            margin-right: 10px;
+        }
+
+            .media-body > .media .forum-avatar .img-circle {
+                height: 38px;
+                width: 38px;
+            }
+
+        .mid-icon {
+            font-size: 66px;
+        }
+
+        .forum-item {
+            margin: 10px 0;
+            padding: 10px 0 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .views-number {
+            font-size: 24px;
+            line-height: 18px;
+            font-weight: 400;
+        }
+
+        .forum-container,
+        .forum-post-container {
+            padding: 30px !important;
+        }
+
+        .forum-item small {
+            color: #999;
+        }
+
+        .forum-item .forum-sub-title {
+            color: #999;
+        }
+
+        .forum-title {
+            margin: 15px 0 15px 0;
+        }
+
+        .forum-info {
+            text-align: center;
+        }
+
+        .forum-desc {
+            color: #999;
+        }
+
+
+
+        a.forum-item-title {
+            color: #0275d8;
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+            a.forum-item-title:hover {
+                color: #0275d8;
+            }
+
+        .forum-icon .fa {
+            font-size: 30px;
+            margin-top: 8px;
+            color: #9b9b9b;
+        }
+
+        .forum-item.active .fa {
+            color: #1ab394;
+        }
+
+        .forum-item.active a.forum-item-title {
+            color: #0275d8;
+        }
+
+        @@media (max-width: 992px) {
+            .forum-info {
+                margin: 15px 0 10px 0;
+                /* Comment this is you want to show forum info in small devices */
+                display: none;
+            }
+
+            .forum-desc {
+                float: none !important;
+            }
+        }
+
+
+
+
+
+        .ibox {
+            clear: both;
+            margin-bottom: 25px;
+            margin-top: 0;
+            padding: 0;
+        }
+
+            .ibox.collapsed .ibox-content {
+                display: none;
+            }
+
+            .ibox.collapsed .fa.fa-chevron-up:before {
+                content: "\f078";
+            }
+
+            .ibox.collapsed .fa.fa-chevron-down:before {
+                content: "\f077";
+            }
+
+            .ibox:after,
+            .ibox:before {
+                display: table;
+            }
+
+        .ibox-title {
+            -moz-border-bottom-colors: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            background-color: #ffffff;
+            border-color: #e7eaec;
+            border-image: none;
+            border-style: solid solid none;
+            border-width: 3px 0 0;
+            color: inherit;
+            margin-bottom: 0;
+            padding: 14px 15px 7px;
+            min-height: 48px;
+        }
+
+        .ibox-content {
+            background-color: #ffffff;
+            color: inherit;
+            padding: 15px 20px 20px 20px;
+            border-color: #e7eaec;
+            border-image: none;
+            border-style: solid solid none;
+            border-width: 1px 0;
+        }
+
+        .ibox-footer {
+            color: inherit;
+            border-top: 1px solid #e7eaec;
+            font-size: 90%;
+            background: #ffffff;
+            padding: 10px 15px;
+        }
+
+        .message-input {
+            height: 90px !important;
+        }
+
+        .form-control, .single-line {
+            background-color: #FFFFFF;
+            background-image: none;
+            border: 1px solid #e5e6e7;
+            border-radius: 1px;
+            color: inherit;
+            display: block;
+            padding: 6px 12px;
+            transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .text-navy {
+            color: #1ab394;
+        }
+
+        .mid-icon {
+            font-size: 66px !important;
+        }
+
+        .m-b-sm {
+            margin-bottom: 10px;
+        }
+    </style>
+    <style>
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+
+        .comment-wrapper .panel-body {
+            max-height: 650px;
+            overflow: auto;
+            background-color: white;
+        }
+
+        .comment-wrapper .media-list .media img {
+            width: 64px;
+            height: 64px;
+        }
+
+        .comment-wrapper .media-list .media {
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 15px;
+        }
+
+        @@media (min-width: 0) {
+            .g-mr-15 {
+                margin-right: 1.07143rem !important;
+            }
+        }
+
+        @@media (min-width: 0) {
+            .g-mt-3 {
+                margin-top: 0.21429rem !important;
+            }
+        }
+
+        .g-height-50 {
+            height: 50px;
+        }
+
+        .g-width-50 {
+            width: 50px !important;
+        }
+
+        @@media (min-width: 0) {
+            .g-pa-30 {
+                padding: 2.14286rem !important;
+            }
+        }
+
+        .g-bg-secondary {
+            background-color: transparent !important;
+        }
+
+        .u-shadow-v18 {
+            box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 0.50);
+        }
+
+        .g-color-green-v4 {
+            color: #009b10 !important;
+        }
+
+        .g-color-red-v4 {
+            color: #f00 !important;
+        }
+
+        .g-font-size-12 {
+            font-size: 0.85714rem !important;
+        }
+
+        .media-comment {
+            margin-top: 20px
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="Message">
+            <div class="d-flex justify-content-center">
+                <div class="row">
+                    <div class="col">
+                        <div id="message" class="msg msg-danger text-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="wrapper wrapper-content animated fadeInRight ">
+                    <div class="ibox-content forum-container" style="box-shadow: 0 5px 10px -6px rgba(0, 0, 0, 1);">
+                        <div class="row ">
+                            <div class=" col-sm-10 ">
+                                <h3>@Model.Name</h3>
+                                @if (ViewBag.isParticipating)
+                                {
+                                    <div>
+                                        Already a participant
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button onclick="participate(@Model.Id)" class="btn btn-primary">Participate</button>
+                                }
+                            </div>
+                            <div class="col">
+                                <div>
+                                    <small>Participants: <i>@ViewBag.Participants</i></small>
+                                </div>
+                                <div>
+                                    <small>Author: <i>@Model.FkAdmin.FkUser.Username</i></small>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="forum-sub-title">Competition ends: <i>@Model.Deadline</i></div>
+                        <hr>
+                        <div class="forum-sub-title">@Model.Description</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function participate(id) {
+            $.ajax({
+                type: 'GET',
+                url: '/Competition/Participate/' + id,
+                success: function (response) {
+                    document.getElementById("message").innerHTML = response
+                },
+                error: function (response) {
+                }
+            });
+        }
+    </script>
+</body>
+</html>

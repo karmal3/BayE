@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewData["Title"] = "Prisijungimas";
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>Login Form</title>
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/searchDisabler.css">
+
+    <script>
+        window.onload = function () {
+            if (sessionStorage.getItem('Message')) {
+                document.getElementById('Message').hidden = false;
+                sessionStorage.removeItem('Message');
+            }
+        }
+        function MessageFunction() {
+            sessionStorage.setItem('Message', true);
+        }
+    </script>
+</head>
+<body>
+    <div class="main">
+        <!------------------------------------ERROR MESSAGE--------------------------------------------->
+        <div hidden id="Message">
+            <div class="d-flex justify-content-center">
+
+                <div class="row">
+                    <div class="col">
+                        <div class="msg msg-danger text-center">@TempData["Message"]</div>
+                    </div>
+                </div>
+            </div>
+        </div><!------------------------------------ERROR MESSAGE--------------------------------------------->
+        <!-------------------------------------------------->
+        <div class="container ">
+            <div class="row">
+                <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+                    <div class="card card-signin my-5 rounded">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Login</h5>
+                            <form class="form-signin" method="post" action="/users/authenticate">
+                                <div class="form-label-group">
+                                    <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email address" required autofocus>
+                                    <label for="inputEmail">Email address</label>
+                                </div>
+                                <div class="form-label-group">
+                                    <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+                                    <label for="inputPassword">Password</label>
+                                </div>
+                                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit" onclick="MessageFunction()">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

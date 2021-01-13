@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <title style="">@ViewData["Title"] - BayE</title>
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
+              crossorigin="anonymous"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
+    </environment>
+    <!--ICON LIBRARY-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .form-control:focus {
+            box-shadow: none;
+            color: #a96b00ed;
+        }
+
+        .form-control-underlined {
+            border-width: 0;
+            border-bottom-width: 1px;
+            border-radius: 0;
+            padding-left: 0;
+        }
+
+        .form-control::placeholder {
+            font-size: 0.95rem;
+            color: #a96b00ed;
+            font-style: italic;
+        }
+
+        .form-control {
+            color: #a96b00ed;
+            font-style: italic;
+        }
+    </style>
+    <style>
+        .nav-search {
+            display: normal;
+        }
+    </style>
+</head>
+<body>
+    <header class="pb-3">
+        <!-- search not in navbar collapse -->
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark  box-shadow mb-3 sticky-top" style="background-color:black;">
+            <div class="container">
+                <div class="d-flex flex-grow-1">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img style="width:70px" src="~/css/logo2.png" alt=""></a>
+                    <form class="mr-2 my-auto w-100 d-inline-block order-1">
+                        <div class="input-group nav-search" style="color:white">
+                            <input id="" type="text" placeholder="What're you searching for?" class="text-center form-control form-control-underlined mb-2 bg-transparent" style="border-bottom-color:#DF8E00">
+                        </div>
+                    </form>
+                </div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon "></span>
+                </button>
+                <div class="navbar-collapse collapse flex-shrink-1 flex-grow-0 order-last" style="background-color:black">
+                    <ul class="navbar-nav navbar-right">
+                        <li class="nav-item">
+                            <a href="/ShoppingCart" class="nav-link text-white btn btn-outline-primary btn-sm m-1 py-1 border-0">
+                                <i class="fa fa-shopping-cart"></i> <span id="CartCount" class="badge badge-pill badge-danger"></span>
+                            </a>
+                        </li>                      
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white btn btn-primary btn-sm m-1 py-1 border-0" asp-area="" asp-controller="Forum" asp-action="Index">Forum</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white btn btn-primary btn-sm m-1 py-1 border-0" asp-area="" asp-controller="Competitions" asp-action="Competitions">Competitions</a>
+                            </li>
+                            <li class="nav-item">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle m-1 py-1 border-0 w-100" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span id="" class="badge badge-warning"> </span> Hello, <i id="username"></i>
+                                    </button>
+                                    <script>
+                                        if (Boolean(@((TempData["Username"] != null).ToString().ToLower())) == true) {
+                                            // Store
+                                            sessionStorage.setItem("Username", "@TempData["Username"]");
+                                            sessionStorage.setItem("Role", "@TempData["Role"]");
+
+                                            // Retrieve
+                                            document.getElementById("username").innerHTML = sessionStorage.getItem("Username");
+                                        }
+                                        // Check browser support
+                                        if (typeof (Storage) !== "undefined") {
+                                            // Store
+                                            @*$.ajax({
+                                                type: 'GET',
+                                                url: "@(Url.Action("GetUsername", "Users"))",
+                                                success: function (response) {
+                                                    document.getElementById("result").innerHTML = response.message;
+                                                },
+                                                error: function (response) {
+                                                    sessionStorage.setItem("lastname", "ERROR");
+                                                }
+                                            });*@
+                                            //sessionStorage.setItem("lastname", username);
+                                            // Retrieve
+                                            if (sessionStorage.getItem("Username") != null) {
+                                                document.getElementById("username").innerHTML = sessionStorage.getItem("Username");
+                                            }
+                                        } else {
+                                            document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+                                        }
+                                    </script>
+                                    <div class="dropdown-menu">
+                                        <a id="admin" hidden href="/Admin/Dashboard" class="dropdown-item">Admin dashboard</a>
+                                        <script>
+                                            if (sessionStorage.getItem("Role") != null && sessionStorage.getItem("Role") === "1") {
+                                                document.getElementById("admin").hidden = false;
+                                            }
+                                        </script>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Ad" asp-action="MyAds">My ads</a>
+                                        <a href="/MyTopics" class="dropdown-item">My topics</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="WishList" asp-action="MyWishList">Wishlist</a>
+                                        <a href="/MyMessages" class="dropdown-item">Messages <span id="messagesCount" class="badge badge-pill badge-warning"></span> </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a onclick="logout()" class="dropdown-item " asp-area="" asp-controller="Users" asp-action="Logout">Logout</a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white btn btn-primary btn-sm m-1 py-1 border-0" asp-area="" asp-controller="Forum" asp-action="Index">Forum</a>
+                            </li>
+                            <li class="nav-item ">
+                                <a class="nav-link text-white btn btn-primary btn-sm m-1 py-1 border-0" asp-area="" asp-controller="Users" asp-action="Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white btn btn-primary btn-sm m-1 py-1 border-0" asp-area="" asp-controller="Users" asp-action="Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!--end navbar-right -->
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-1 pt-5">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="box-shadow footer text-muted">
+        <div class="container">
+            &copy; 2020 - BayE
+        </div>
+    </footer>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o">
+        </script>
+    </environment>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $.ajax({
+            type: 'GET',
+            url: '/CartCount',
+            success: function (data) {
+                document.getElementById('CartCount').innerHTML = data;
+            },
+            error: function () {
+                // add error message or smth
+            }
+        });
+
+
+        $.ajax({
+            type: 'GET',
+            url: '/Messages/UnreadCount',
+            success: function (data) {
+                document.getElementById('messagesCount').innerHTML = data;
+            },
+            error: function () {
+                // add error message or smth
+            }
+        });
+
+        function logout() {
+            sessionStorage.clear();
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

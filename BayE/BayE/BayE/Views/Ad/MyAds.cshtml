@@ -1,0 +1,662 @@
+﻿@model IEnumerable<BayE.Entities.Ad>
+@{
+    ViewData["Title"] = "MyAds";
+
+}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/css/searchDisabler.css">
+
+    <!--ICON LIBRARY-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .text-gray {
+            color: #aaa;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+        }
+
+        .form-control-underlined {
+            border-width: 0;
+            border-bottom-width: 1px;
+            border-radius: 0;
+            padding-left: 0;
+        }
+
+
+
+        .form-control::placeholder {
+            font-size: 0.95rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .bootstrap-select .bs-ok-default::after {
+            width: 0.3em;
+            height: 0.6em;
+            border-width: 0 0.1em 0.1em 0;
+            transform: rotate(45deg) translateY(0.5rem);
+        }
+
+        .btn.dropdown-toggle:focus {
+            outline: none !important;
+        }
+
+        .fa {
+            font-size: 1em;
+        }
+
+        .fa-thumbs-down, .fa-thumbs-o-down {
+            transform: rotateY(180deg);
+        }
+
+        .fa-2 {
+            font-size: 20px;
+        }
+    </style>
+    <style>
+        .preview-images-zone {
+            width: 100%;
+            border: 1px solid #ddd;
+            min-height: 100px;
+            /* display: flex; */
+            padding: 5px 5px 0px 5px;
+            position: relative;
+            overflow: auto;
+        }
+
+            .preview-images-zone > .preview-image:first-child {
+                height: 100px;
+                width: 100px;
+                position: relative;
+                margin-right: 5px;
+            }
+
+            .preview-images-zone > .preview-image {
+                height: 90px;
+                width: 90px;
+                position: relative;
+                margin-right: 5px;
+                float: left;
+                margin-bottom: 5px;
+            }
+
+                .preview-images-zone > .preview-image > .image-zone {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                    .preview-images-zone > .preview-image > .image-zone > img {
+                        width: 100%;
+                        height: 100%;
+                    }
+
+                .preview-images-zone > .preview-image > .tools-edit-image {
+                    position: absolute;
+                    z-index: 100;
+                    color: #fff;
+                    bottom: 0;
+                    width: 100%;
+                    text-align: center;
+                    margin-bottom: 10px;
+                    display: none;
+                }
+
+                .preview-images-zone > .preview-image > .image-cancel {
+                    font-size: 18px;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    font-weight: bold;
+                    margin-right: 10px;
+                    cursor: pointer;
+                    display: none;
+                    z-index: 100;
+                }
+
+        .preview-image:hover > .image-zone {
+            cursor: move;
+            opacity: .5;
+        }
+
+        .preview-image:hover > .tools-edit-image,
+        .preview-image:hover > .image-cancel {
+            display: block;
+        }
+
+        .ui-sortable-helper {
+            width: 90px !important;
+            height: 90px !important;
+        }
+    </style>
+    <style>
+        /* Style the button that is used to open and close the collapsible content */
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+            /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+            .active, .collapsible:hover {
+                background-color: #ccc;
+            }
+
+        /* Style the collapsible content. Note: hidden by default */
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+    </style>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!--Datetimepicker-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            document.getElementById('pro-image').addEventListener('change', readImage, false);
+
+            $(document).on('click', '.image-cancel', function () {
+                let no = $(this).data('no');
+                $(".preview-image.preview-show-" + no).remove();
+            });
+        });
+
+        var num = 4;
+        function readImage() {
+            if (window.File && window.FileList && window.FileReader) {
+                var files = event.target.files; //FileList object
+                var output = $(".preview-images-zone");
+
+                for (let i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    if (!file.type.match('image')) continue;
+
+                    var picReader = new FileReader();
+
+                    picReader.addEventListener('load', function (event) {
+                        var picFile = event.target;
+                        var html = '<div class="preview-image preview-show-' + num + '">' +
+                            '<div class="image-cancel" data-no="' + num + '">x</div>' +
+                            '<div class="image-zone"><img id="pro-img-' + num + '" src="' + picFile.result + '"></div>' +
+                            '<div class="tools-edit-image"><a href="javascript:void(0)" data-no="' + num + '" class="btn btn-light btn-edit-image">edit</a></div>' +
+                            '</div>';
+
+                        output.append(html);
+                        num = num + 1;
+                    });
+
+                    picReader.readAsDataURL(file);
+                }
+                //$("#pro-image").val('');
+            } else {
+                console.log('Browser not support');
+            }
+        }
+
+        var categories
+        var subcategory
+
+        function getSubCategories(categories) {
+            $.ajax({
+                type: 'GET',
+                url: '/GetCategories',
+                success: function (data) {
+                    categories = data
+                },
+                error: function () {
+                    // add error message or smth
+                }
+            });
+            $.ajax({
+                type: 'GET',
+                url: '/GetSubCategories',
+                success: function (data) {
+                    subcategory = data
+                },
+                error: function () {
+                    // add error message or smth
+                }
+            });
+        }
+
+        function makeSubmenu(value) {
+            if (value.length == 0) document.getElementById("categorySelect").innerHTML = "<option></option>";
+            else {
+
+                var citiesOptions = "";
+                for (categoryId in subcategory) {
+                    if (subcategory[categoryId].fkCategoryId == value) {
+                        citiesOptions += "<option value=" + subcategory[categoryId].id + ">" + subcategory[categoryId].name + "</option>";
+                    }
+                }
+                document.getElementById("categorySelect").innerHTML = citiesOptions;
+            }
+        }
+
+        function makeEditSubmenu(value) {
+            if (value.length == 0) document.getElementById("categorySelect1").innerHTML = "<option></option>";
+            else {
+
+                var citiesOptions = "";
+                for (categoryId in subcategory) {
+                    if (subcategory[categoryId].fkCategoryId == value) {
+                        citiesOptions += "<option value=" + subcategory[categoryId].id + ">" + subcategory[categoryId].name + "</option>";
+                    }
+                }
+                document.getElementById("categorySelect1").innerHTML = citiesOptions;
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Trigger the modal with a button -->
+    <button type="button" onclick="getSubCategories()" class="btn btn-sm btn-warning pull-right" data-toggle="modal" data-target="#exampleModalCenter">Create new</button>
+    <!-- Modal Create -->
+    <form method="post" action="/ad/createad" enctype="multipart/form-data">
+        <div class="modal fade bd-example-modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="card product-card h-100 ">
+                        <div class="card-body">
+                            <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                <!-- Category -->
+                                <select id="category" required class="bg-primary custom-select bg-light border-0" name="FkCategoryId" onchange="makeSubmenu(this.value)">
+                                    <option value="" disabled selected>Category</option>
+                                    @foreach (BayE.Entities.Adcategory category in ViewBag.Categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <!-- Sub-category -->
+                                <select required id="categorySelect" class="bg-primary custom-select bg-light border-0" name="FkSubCategoryId">
+                                    <option value="" disabled selected>Sub-Category</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" placeholder="Item name" aria-label="itemname" name="Title" aria-describedby="basic-addon1" maxlength="30">
+                            </div>
+                            <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" name="Price" placeholder="Price" aria-label="price" pattern="[0-9\.]{1,8}" title="numbers with . only">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">&euro;</span>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3 border rounded">
+                                <div class="input-group rounded" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text border-0">Description</span>
+                                    </div>
+                                    <textarea required class="form-control border-0" name="Description" aria-label="Description" rows="6" maxlength="255"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!----------------------UPLOAD PICTURES------------------------------------------->
+                        <div class="body border p-4 border mb-1 border-bottom-0" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                            <div class="input-group mb-3">
+                                <fieldset class="form-group">
+                                    <a href="javascript:void(0)" onclick="$('#pro-image').click()">Upload Image</a>
+                                    <input type="file" id="pro-image" name="images" style="display: none;" class="form-control" multiple>
+                                </fieldset>
+                                <div class="preview-images-zone border-0">
+                                    <div class="preview-image preview-show-1">
+                                        <div class="image-cancel" data-no="1">x</div>
+                                        <div class="image-zone"><img id="pro-img-1" src="http://placehold.it/700x400"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^UPLOAD PICTURES^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-->
+                        <!--Auction CREATE-->
+                        <div id="accordion">
+                            <button type="button" class="collapsible" data-toggle="collapse" href="#collapseOne" style="text-align:center">Auction product</button>
+                            <div class="card border-0">
+                                <div id="collapseOne" class="collapse" data-parent="#accordion">
+                                    <div class="card card-signin rounded">
+                                        <div class="card-body">
+                                            <div class="custom-control custom-checkbox mb-3">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck" name="isAuction" value="true">
+                                                <label class="custom-control-label" for="customCheck">Auction product</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" name="deadline" placeholder="Auction ends" />
+                                                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <script type="text/javascript">
+                                                $(function () {
+                                                    $('#datetimepicker1').datetimepicker;
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Auction CREATE-->
+
+                        <div class="card-footer border-top-0 ">
+                            <button type="submit" class="text-white btn btn-primary border-0 pull-left">Create</button>
+                            <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Modal Edit-->
+    @foreach (BayE.Entities.Auctionad auction in ViewBag.Auctions)
+    {
+        <form method="post" action="/Auction/Update/@auction.Id" enctype="multipart/form-data">
+            <div class="modal fade bd-example-modal" id="auctionModalCenterEdit_@auction.Id" tabindex="-2" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="card product-card h-100 ">
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <!-- Category -->
+                                    <select required class="bg-primary custom-select bg-light border-0" name="FkCategoryId" onchange="makeEditSubmenu(this.value)">
+                                        <option value="" disabled selected>Category</option>
+                                        @foreach (BayE.Entities.Adcategory category in ViewBag.Categories)
+                                        {
+                                            if (category.Id == auction.FkCategoryId)
+                                            {
+                                                <option selected value="@category.Id">@category.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <!-- Sub-category -->
+                                    <select required id="categorySelect1" class="bg-primary custom-select bg-light border-0" name="FkSubCategoryId">
+                                        <option value="" disabled selected>Sub-Category</option>
+                                        @foreach (BayE.Entities.Adsubcategory subCategory in ViewBag.SubCategories)
+                                        {
+                                            if (subCategory.Id == auction.FkSubcategoryId)
+                                            {
+                                                <option selected value="@subCategory.Id">@subCategory.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@subCategory.Id">@subCategory.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                    <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" placeholder="Item name" aria-label="itemname" name="name" value="@auction.Name" aria-describedby="basic-addon1" maxlength="30">
+                                </div>
+                                @*<div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                        <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" name="Price" placeholder="Price" value="@auction.Price" aria-label="price" pattern="[0-9\.]{1,8}" title="numbers with . only">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">&euro;</span>
+                                        </div>
+                                    </div>*@
+                                <hr>
+                                <div class="input-group mb-3 border rounded">
+                                    <div class="input-group rounded" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text border-0">Description</span>
+                                        </div>
+                                        <textarea required class="form-control border-0" name="Description" aria-label="Description" rows="6" maxlength="255">@auction.Description</textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!----------------------UPLOAD PICTURES------------------------------------------->
+
+                            <div class="body border p-4 border mb-1" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                                <div class="input-group mb-3">
+                                    <fieldset class="form-group">
+                                        <a href="javascript:void(0)" onclick="$('#pro-image').click()">Upload Image</a>
+                                        <input type="file" id="pro-image" name="images" style="display: none;" class="form-control" multiple>
+                                    </fieldset>
+                                    <div class="preview-images-zone border-0">
+                                        <div class="preview-image preview-show-1">
+                                            <div class="image-cancel" data-no="1">x</div>
+                                            <div class="image-zone"><img id="pro-img-1" src="http://placehold.it/700x400"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^UPLOAD PICTURES^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-->                          
+                            <div class="card-footer border-top-0 ">
+                                <button type="submit" class="text-white btn btn-primary border-0 pull-left">Confirm changes</button>
+                                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    @foreach (var ad in Model)
+    {
+        <form method="post" action="/ad/updatead/@ad.Id" enctype="multipart/form-data">
+            <div class="modal fade bd-example-modal" id="exampleModalCenterEdit_@ad.Id" tabindex="-2" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="card product-card h-100 ">
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <!-- Category -->
+                                    <select required class="bg-primary custom-select bg-light border-0" name="FkCategoryId" onchange="makeEditSubmenu(this.value)">
+                                        <option value="" disabled selected>Category</option>
+                                        @foreach (BayE.Entities.Adcategory category in ViewBag.Categories)
+                                        {
+                                            if (category.Id == ad.FkCategory.Id)
+                                            {
+                                                <option selected value="@category.Id">@category.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                    <!-- Sub-category -->
+                                    <select required id="categorySelect1" class="bg-primary custom-select bg-light border-0" name="FkSubCategoryId">
+                                        <option value="" disabled selected>Sub-Category</option>
+                                        @foreach (BayE.Entities.Adsubcategory subCategory in ViewBag.SubCategories)
+                                        {
+                                            if (subCategory.Id == ad.FkSubcategoryId)
+                                            {
+                                                <option selected value="@subCategory.Id">@subCategory.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@subCategory.Id">@subCategory.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                    <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" placeholder="Item name" aria-label="itemname" name="Title" value="@ad.Title" aria-describedby="basic-addon1" maxlength="30">
+                                </div>
+                                <div class="input-group mb-3 rounded" style="box-shadow: 0 0.2rem 1rem 0 rgba(0, 0, 0, 0.1);">
+                                    <input required type="text" class="text-center form-control form-control-underlined  bg-transparent" style="" name="Price" placeholder="Price" value="@ad.Price" aria-label="price" pattern="[0-9\.]{1,8}" title="numbers with . only">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">&euro;</span>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="input-group mb-3 border rounded">
+                                    <div class="input-group rounded" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text border-0">Description</span>
+                                        </div>
+                                        <textarea required class="form-control border-0" name="Description" aria-label="Description" rows="6" maxlength="255">@ad.Description</textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!----------------------UPLOAD PICTURES------------------------------------------->
+
+                            <div class="body border p-4 border-bottom-0" style="box-shadow: 0 0.0rem 0.0rem 0 rgba(0, 0, 0, 0.1);">
+                                <div class="input-group mb-3">
+                                    <fieldset class="form-group">
+                                        <a href="javascript:void(0)" onclick="$('#pro-image').click()">Upload Image</a>
+                                        <input type="file" id="pro-image" name="images" style="display: none;" class="form-control" multiple>
+                                    </fieldset>
+                                    <div class="preview-images-zone border-0">
+                                        <div class="preview-image preview-show-1">
+                                            <div class="image-cancel" data-no="1">x</div>
+                                            <div class="image-zone"><img id="pro-img-1" src="http://placehold.it/700x400"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^UPLOAD PICTURES^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-->
+                            <!--Auction EDIT-->
+                            <div id="accordion">
+                                <button type="button" class="collapsible" data-toggle="collapse" href="#collapseOne" style="text-align:center">Auction product</button>
+                                <div class="card border-0">
+                                    <div id="collapseOne" class="collapse" data-parent="#accordion">
+                                        <div class="card card-signin rounded">
+                                            <div class="card-body">
+                                                <div class="custom-control custom-checkbox mb-3">
+                                                    <input type="checkbox" class="custom-control-input" id="customCheck" name="isAuction" value="true">
+                                                    <label class="custom-control-label" for="customCheck">Auction product</label>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                                        <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" name="deadline" placeholder="Auction ends" />
+                                                        <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    $(function () {
+                                                        $('#datetimepicker1').datetimepicker;
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Auction EDIT-->
+                            <div class="card-footer border-top-0 ">
+                                <button type="submit" class="text-white btn btn-primary border-0 pull-left">Confirm changes</button>
+                                <button type="button" class="close pull-right" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+    <h1>My ads</h1>
+    <div class="container-fluid dark-grey-text mt-5">
+        <div class="row">
+            <!-- Page Content -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="row">
+                            @foreach (BayE.Entities.Auctionad auction in ViewBag.Auctions)
+                            {
+                                <div class="col-lg-4 col-md-6 mb-3">
+                                    <div class="card product-card h-100 ">
+                                        <a href="#"><img class="card-img-top picture-shadow" style="object-fit:scale-down;height:320px;" src="~/auctionAds/@auction.Id/index/indexPicture.png" alt="" onerror="this.onerror = null;this.src='/ads/image-missing.png'" ;"></a>
+                                        <div class="card-body">
+                                            <h4 class="card-title">
+                                                <a href="/Auction/@auction.Id">@auction.Name</a>
+                                            </h4>
+                                            <h5>@auction.Bid.Max(o => o.Price) &euro;</h5>
+                                            <p class="card-text">@auction.Description</p>
+                                        </div>
+                                        <div class="card-footer border-top-0">
+                                            <ul class="list-group">
+                                                <li class="list-inline-item">
+                                                    <!--<small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>-->
+                                                    <div class="btn-group pull-right">
+                                                        <button class="btn" type="button" onclick="getSubCategories()" data-toggle="modal" data-target="#auctionModalCenterEdit_@auction.Id"><i class="fa fa-pencil " style=""></i></button>
+                                                        <form method="post" action="/Auction/Delete/@auction.Id"><button class="btn" type="submit" onclick="deleteConfirm()"><i class="fa fa-trash"></i></button></form>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @foreach (var ad in Model)
+                            {
+                                <div class="col-lg-4 col-md-6 mb-3">
+                                    <div class="card product-card h-100 ">
+                                        <a href="#"><img class="card-img-top picture-shadow" style="object-fit:scale-down;height:320px;" src="~/ads/@ad.Id/index/indexPicture.png" alt="" onerror="this.onerror = null;this.src='/ads/image-missing.png'" ;"></a>
+                                        <div class="card-body">
+                                            <h4 class="card-title">
+                                                <a href="/Ad/@ad.Id">@ad.Title</a>
+                                            </h4>
+                                            <h5>@ad.Price&euro;</h5>
+                                            <p class="card-text">@ad.Description</p>
+                                        </div>
+                                        <div class="card-footer border-top-0">
+                                            <ul class="list-group">
+                                                <li class="list-inline-item">
+                                                    <!--<small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>-->
+                                                    <div class="btn-group pull-right">
+                                                        <button class="btn" type="button" onclick="getSubCategories()" data-toggle="modal" data-target="#exampleModalCenterEdit_@ad.Id"><i class="fa fa-pencil " style=""></i></button>
+                                                        <form method="post" action="/ad/deletead?id=@ad.Id"><button class="btn" type="submit" onclick="deleteConfirm()"><i class="fa fa-trash"></i></button></form>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function deleteConfirm() {
+            var r = confirm("Do you really want to delete this ad?");
+            if (r) {
+            }
+            else {
+                this.event.preventDefault();
+            }
+        }
+    </script>
+</body>
+</html>
+

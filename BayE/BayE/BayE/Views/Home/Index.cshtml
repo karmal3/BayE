@@ -1,0 +1,137 @@
+﻿@model IEnumerable<BayE.Entities.Ad>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css">
+    <style>
+        /* Style the button that is used to open and close the collapsible content */
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+            /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+            .active, .collapsible:hover {
+                background-color: #ccc;
+            }
+
+        /* Style the collapsible content. Note: hidden by default */
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+    </style>
+    <style>
+        .form-control:focus {
+            box-shadow: none;
+        }
+
+        .form-control-underlined {
+            border-width: 0;
+            border-bottom-width: 1px;
+            border-radius: 0;
+            padding-left: 0;
+        }
+    </style> 
+</head>
+<body>
+    <div class="mt-5 pt-0 ">
+        <div id="accordion">
+            <button type="button" class="collapsible rounded" data-toggle="collapse" href="#collapseOne" style="text-align:center">Shop by category</button>
+            <div class="card border-0">
+                <div id="collapseOne" class="collapse" data-parent="#accordion">
+                    <div class="card card-signin my-2 rounded">
+                        <div class="card-body">
+                            <h6 class="text-center">Filter</h6>
+                            <hr>
+                            <div class="d-flex justify-content-center">
+                            </div>
+                            <form class="form-signin ">
+                                <button style="max-width:100px;" class="btn btn-sm btn-primary btn-block text-uppercase " type="submit">Filter</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid dark-grey-text mt-5">
+            <div class="row">
+                <!-- Page Content -->
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                @if (ViewBag.Auctions != null)
+                                {
+                                    @foreach (BayE.Entities.Auctionad auction in ViewBag.Auctions)
+                                    {
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="card product-card h-100 ">
+                                                <a href="#"><img class="card-img-top picture-shadow" style="object-fit:scale-down;height:320px;" src="~/auctionAds/@auction.Id/index/indexPicture.png" alt="" onerror="this.onerror = null;this.src='/ads/image-missing.png'" ;"></a>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">
+                                                        <a onclick="viewedAd(@auction.Id)" href="/Auction/@auction.Id">@auction.Name</a>
+                                                    </h4>
+                                                    <h5>@auction.Bid.Max(o => o.Price) &euro;</h5>
+                                                    <p class="card-text">@auction.Description</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                @if (Model != null)
+                                {
+                                    @foreach (var ad in Model)
+                                    {
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="card product-card h-100 ">
+                                                <a href="#"><img class="card-img-top picture-shadow" style="object-fit:scale-down;height:320px;" src="~/ads/@ad.Id/index/indexPicture.png" alt="" onerror="this.onerror = null;this.src='/ads/image-missing.png'" ;"></a>
+                                                <div class="card-body">
+                                                    <h4 class="card-title">
+                                                        <a onclick="viewedAd(@ad.Id)" href="/Ad/@ad.Id">@ad.Title</a>
+                                                    </h4>
+                                                    <h5>@ad.Price&euro;</h5>
+                                                    <p class="card-text">@ad.Description</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function viewedAd(id) {
+            $.ajax({
+                type: 'GET',
+                url: '/Viewed/' + id,
+                success: function (response) {
+                },
+                error: function () {
+                    // add error message or smth
+                }
+            });
+        }
+    </script>
+</body>
+</html>
